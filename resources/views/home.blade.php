@@ -6,11 +6,16 @@
         <div class="col-sm">
             <a class="btn btn-secondary btn-sm" href="{{ route('home', ['start' => $prev->format('Y-m-d') ]) }}" role="button">{{ $prev->format('M j, Y') }}</a>
         </div>
-        <div class="col-sm text-center">
+        <div class="col-sm text-center {{ $start->notEqualTo($today) ? 'text-danger' : '' }}">
             <h2>{{ $start->format('M j, Y') }}</h2>
         </div>
         <div class="col-sm text-right">
+            @if ($start->lessThan($today) && $end->notEqualTo($today))
             <a class="btn btn-secondary btn-sm" href="{{ route('home', ['start' => $end->format('Y-m-d') ]) }}" role="button">{{ $end->format('M j, Y') }}</a>
+            @endif
+            @if ($start->notEqualTo($today))
+            <a class="btn btn-secondary btn-sm" href="{{ route('home') }}" role="button">Today</a>
+            @endif
         </div>
     </div>
 

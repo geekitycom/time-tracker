@@ -66,6 +66,8 @@ class HomeController extends Controller
 
         $entries = collect(array_values($index));
 
+        // dd([$prev, $start, $end, $today]);
+
         return view('home', compact('entries', 'prev', 'start', 'end', 'today'));
     }
 
