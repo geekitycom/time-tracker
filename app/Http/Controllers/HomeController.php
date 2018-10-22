@@ -3,8 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Entry;
+use App\Project;
+use App\Task;
 use App\Jobs\CalculateEntryDuration;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -48,14 +51,15 @@ class HomeController extends Controller
                 ['started_at', '<', $end],
             ])
             ->orderBy('started_at', 'desc')
+            ->with('task')
             ->get();
 
         $index = [];
 
         foreach ($rows as $entry) {
-            $title = trim($entry->title);
+            $title = trim($entry->task->title);
 
-            if (isset($index[$entry->title])) {
+            if (isset($index[$entry->task->title])) {
                 $index[$title]->duration += $entry->duration;
                 $index[$title]->children[] = $entry;
             } else {
@@ -79,9 +83,43 @@ class HomeController extends Controller
             $start = new Carbon($request->start . ' 00:00:00');
         }
 
+        $titles = explode(': ', $request->title, 2);
+        if (1 === count($titles)) {
+            $projectTitle = null;
+            $project = null;
+        } elseif (2 === count($titles)) {
+            $projectTitle = trim($titles[0]);
+            try {
+                $project = Project::where('user_id', Auth::id())
+                    ->where('title', $projectTitle)
+                    ->firstOrFail();
+            } catch (Exception $e) {
+                $project = new Project();
+                $project->user_id = Auth::id();
+                $project->title = $projectTitle;
+                $project->save();
+            }
+        }
+
+        $taskTitle = trim($request->title);
+
+        try {
+            $task = Task::where('user_id', Auth::id())
+                ->where('project_id', is_null($project) ? null : $project->id)
+                ->where('title', $taskTitle)
+                ->firstOrFail();
+        } catch (Exception $e) {
+            $task = new Task();
+            $task->user_id = Auth::id();
+            $task->project_id = is_null($project) ? null : $project->id;
+            $task->title = $taskTitle;
+        }
+
+        $task->save();
+
         $entry = new Entry();
         $entry->user()->associate(Auth::user());
-        $entry->title = $request->title;
+        $entry->task()->associate($task);
         if (empty($request->time)) {
             $entry->started_at = Carbon::now();
         } else {

@@ -44,20 +44,20 @@
     <div class="row pt-2 pb-2">
         <div class="col-lg-10">
             <button
-                class="btn btn-link btn-sm entry-toggle-children entry-collapsed"
+                class="btn btn-link entry-toggle-children entry-collapsed"
                 data-children="entry-children-{{ $entry->id }}"
             >
-                <span class="icon-collapsed"><font-awesome-icon :icon="['fas', 'caret-right']"></font-awesome-icon></span>
-                <span class="icon-expanded"><font-awesome-icon :icon="['fas', 'caret-down']"></font-awesome-icon></span>
+                <span class="icon-collapsed">+</span>
+                <span class="icon-expanded">-</span>
             </button>
             <div class="entry-time-duration">{{ $entry->timeDuration() }}</div>
-            <div class="entry-title">{{ $entry->title }}</div>
+            <div class="entry-title">{{ $entry->task->title }}</div>
         </div>
         <div class="col-lg-2 text-lg-right">
             <form method="post" action="{{ route('home.store') }}">
                 @csrf
                 <input type="hidden" name="parent_id" value="{{ $entry->id }}">
-                <input type="hidden" name="title" value="{{ $entry->title }}">
+                <input type="hidden" name="title" value="{{ $entry->task->title }}">
                 <input type="hidden" name="start" value="{{ $start->format('Y-m-d') }}">
                 <button type="submit" class="btn btn-primary">Continue</button>
             </form>
@@ -76,6 +76,7 @@
                     @csrf
                     @method('DELETE')
                     <input type="hidden" name="id" value="{{ $child->id }}">
+                    <input type="hidden" name="start" value="{{ $start->format('Y-m-d') }}">
                     <button type="submit" class="btn btn-link btn-sm"><span class="text-muted">Delete</span></button>
                 </form>
             </div>
