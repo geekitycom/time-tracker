@@ -14,6 +14,11 @@ class Entry extends Model
         'updated_at',
     ];
 
+    protected $casts = [
+        'duration' => 'integer',
+        'stop' => 'boolean',
+    ];
+
     public function prev()
     {
         return Entry::where('user_id', $this->user_id)

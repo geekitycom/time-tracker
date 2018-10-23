@@ -30,36 +30,39 @@
             <label for="time" class="sr-only">Time</label>
             <input type="text" class="form-control text-lg-right" name="time" id="time" placeholder="00:00">
         </div>
-        <div class="form-group col-lg-9">
+        <div class="form-group col-lg-10">
             <label for="title" class="sr-only">Title</label>
             <input type="text" class="form-control" name="title" id="title" placeholder="Title">
         </div>
-        <div class="form-group col-lg-2">
-            <button type="submit" class="btn btn-primary btn-block">Save</button>
+        <div class="form-group col-lg-1">
+            <div class="btn-group" role="group" aria-label="Basic example">
+                <button type="submit" name="action" value="start" class="btn btn-primary"><font-awesome-icon :icon="['fas', 'play']"></font-awesome-icon></button>
+                <button type="submit" name="action" value="stop" class="btn btn-danger"><font-awesome-icon :icon="['fas', 'stop']"></font-awesome-icon></button>
+            </div>
         </div>
     </div>
 </form>
 
 @foreach ($entries as $entry)
     <div class="row pt-2 pb-2">
-        <div class="col-lg-10">
+        <div class="col-lg-11">
             <button
                 class="btn btn-link entry-toggle-children entry-collapsed"
                 data-children="entry-children-{{ $entry->id }}"
             >
-                <span class="icon-collapsed">+</span>
-                <span class="icon-expanded">-</span>
+                <span class="icon-collapsed"><font-awesome-icon :icon="['fas', 'caret-right']"></font-awesome-icon></span>
+                <span class="icon-expanded"><font-awesome-icon :icon="['fas', 'caret-down']"></font-awesome-icon></span>
             </button>
             <div class="entry-time-duration">{{ $entry->timeDuration() }}</div>
             <div class="entry-title">{{ $entry->task->title }}</div>
         </div>
-        <div class="col-lg-2 text-lg-right">
+        <div class="col-lg-1 text-lg-right">
             <form method="post" action="{{ route('home.store') }}">
                 @csrf
                 <input type="hidden" name="parent_id" value="{{ $entry->id }}">
                 <input type="hidden" name="title" value="{{ $entry->task->title }}">
                 <input type="hidden" name="start" value="{{ $start->format('Y-m-d') }}">
-                <button type="submit" class="btn btn-primary">Continue</button>
+                <button type="submit" class="btn btn-primary"><font-awesome-icon :icon="['fas', 'play']"></font-awesome-icon></button>
             </form>
         </div>
     </div>

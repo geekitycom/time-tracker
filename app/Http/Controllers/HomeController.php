@@ -83,6 +83,8 @@ class HomeController extends Controller
             $start = new Carbon($request->start . ' 00:00:00');
         }
 
+        $stop = (isset($request->action) && 0 == strcmp('stop', $request->action));
+
         $titles = explode(': ', $request->title, 2);
         if (1 === count($titles)) {
             $projectTitle = null;
@@ -102,6 +104,10 @@ class HomeController extends Controller
         }
 
         $taskTitle = trim($request->title);
+
+        if ($stop && empty($taskTitle)) {
+            $taskTitle = 'Stop';
+        }
 
         try {
             $task = Task::where('user_id', Auth::id())
@@ -131,6 +137,7 @@ class HomeController extends Controller
         );
 
         $entry->started_at->second = 0;
+        $entry->stop = $stop;
 
         $entry->save();
 
